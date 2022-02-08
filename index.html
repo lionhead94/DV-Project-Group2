@@ -1,0 +1,380 @@
+<!-- Group 2 - Andrea Gatti, Sara Frusone, Matteo Martini -->
+
+<!DOCTYPE html class="standard">
+<html language="en">
+    <head>
+        <meta charset="utf8">
+        <link rel="icon" type="image/x-icon" href="https://www.fashionrevolution.org/wp-content/themes/fashion-revolution/assets/img/logo.svg">
+        <link rel="stylesheet" href="style.css">
+        <script src="https://d3js.org/d3.v6.min.js"></script>    
+        <script src="https://cdn.jsdelivr.net/npm/underscore@1.13.2/underscore-umd-min.js"></script>
+        <script src="loader.js"></script>
+        <script src="spiderLib.js"></script>
+        <script src="https://unpkg.com/d3-sankey@0.12.3/dist/d3-sankey.min.js"></script>
+        <script type="text/javascript">
+            // color blind switch callback
+            function toggleColorPalette(){
+                let toggleValue = document.getElementById("colorBlindToggle").checked;
+                if(toggleValue){
+                    document.documentElement.className = "colorblinds";
+                    document.getElementById("wordCloud").src = "wordCloud_colorBlinds.jpg";
+                }
+                else{
+                    document.documentElement.className = "standard";
+                    document.getElementById("wordCloud").src = "wordCloud.jpg";
+                }
+                spider_update();
+                parallelCoords_update();
+                groups_update();
+                divergent_update_legend();
+                scoreComp_legend_update();
+                dashboard_update();
+            }
+        </script>
+        <title> Fashion Transparency Index 2021 </title> 
+    </head>
+    <body>
+        <div id=container>
+            <img id="wordCloud" src="wordCloud.jpg" alt="wordCloud" style="max-width: 100%; max-height: 100%; margin-top: 20px;" >
+            <div class="toggleAndLabel">
+                <label for="toggle" class="toggleLabel"> Color blind palette </label>
+                <label id="toggle" class="switch">
+                    <input type="checkbox" onchange="toggleColorPalette()" id="colorBlindToggle">
+                    <span class="slider round"></span>
+                </label>
+            </div>
+            
+            <h1> Fashion Transparency index 2021 </h1>
+                <h2> What is the fashion Transparency index? </h2>
+                    <p>
+                        Today companies share their policies and commitments on human rights and the environment.
+                        Even if transparency underpins transformative change, there is still much crucial information about the practices of the fashion industry that remains concealed, particularly when it comes to impacts on the lives of workers in the supply chain and on the environment.
+                    </p>
+                    <p>
+                        Transparency is foundational to achieving systemic change in the global fashion industry, which is why The fashion Index has been created, in 2014.
+                        Without transparency, achieving a sustainable, accountable, and fair fashion industry will be impossible, even if it is not to be confused with sustainability.
+                        A lack of transparency perpetuates an exclusive system, where people are expected to trust brands who have continued to put profit and growth above all else.<br>
+                        When brands publicly disclose information, it allows anyone to scrutinise their policies, hold them accountable for their claims and advocate for positive change.
+                    </p>
+                    <p>
+                        The Fashion Transparency Index 2021 reviews and ranks 250 of the biggest global fashion retailers and apparel brands according to how much information they disclose about their suppliers, supply chain policies and practices, and social and environmental impact.
+                        The Index is a tool to push and incentivise brands to be more transparent about their social and environmental efforts.<br>
+                        The motto of the index is: <strong>"Transparency is a first step; it is not radical, but it is necessary."</strong>
+                    </p>
+                    <div class="scheme">
+                        Transparency → Scrutiny → Accountability →<mark>Change</mark>
+                    </div>
+                    <h3> The aim of this data visualization analysis </h3>
+                    <p>
+                        Looking at the data provided by brands it is possible to have a complete insight into the Fashion world impact.
+                        Data visualization can help in the comprehension of the index, and it can highlight some aspects related to it. <br>
+                        Readers are encouraged to form their own views and opinions on each of the brands mentioned.
+                    </p>
+                <h2> The overall ranking </h2>
+                    <p>
+                        Final scores have been converted into percentages and rounded to the nearest whole number. 
+                        Please focus on the range in which brands score rather than their individual scores as this gives you a truer reflection of the level of transparency across these large global brands.
+                    </p>
+                    <p>    
+                        Fashion index 2021 percentage values are represented using bars.
+                        The plot is interactive, you can select any of the 250 brands (from one to all) and decide how to sort the bars.
+                    </p>
+                    <div class="mainPlotContainer">
+                        <div id="mainPlot" class="mainPlot"></div>
+                        <div class="mainPlotChecklist">
+                            <h3 class=checklistHeader> Brands:</h3>
+                            <div class="checkboxlist" id="brands_checklist"></div>
+                            <button type="button" onclick="mainPlot_selectAll()"> Select all </button>
+                            <button type="button" onclick="mainPlot_clearAll()"> Clear all </button>
+                            <label class="sort_label" for="sorting_main">Sort by:</label>
+                            <select name="sorting_main" id="sorting_main" onchange="mainPlot_update()">
+                                <option value="score_asc"> Index (asc) </option>
+                                <option value="score_des"> Index (desc) </option>
+                                <option value="alpha_asc" selected> Alphabetical (asc) </option>
+                                <option value="alpha_des"> Alphabetical (desc) </option>
+                            </select> 
+                        </div>
+                    </div>
+                    <h3> Transparency vs income </h3>
+                        <p>
+                            Does The income of a Brand influence the possibility to invest into policies and commitments on human rights and environment?
+                            Does being fair and transparent help the brand success from an economical point of view? Or, unfortunately, being opaque is cheaper?<br>
+                            Here the top 9 ranking per income and their 2021 Fashion transparency index.
+                            The plot is interactive, play and do the comparisons you wish, changing the order of the elements.
+                        </p>
+                        <div>
+                            <label class="sort_label" for="sorting_divergent">Sort by:</label>
+                            <select name="sorting_divergent" id="sorting_divergent" onchange="divergent_update()">
+                                <option value="score_asc"> Index (asc) </option>
+                                <option value="score_des"> Index (desc) </option>
+                                <option value="inc_asc"> Income (asc) </option>
+                                <option value="inc_des"> Income (desc) </option>
+                                <option value="alpha_asc" selected> Alphabetical (asc) </option>
+                                <option value="alpha_des"> Alphabetical (desc) </option>
+                            </select> 
+                            <div id="divergent"></div> 
+                        </div>
+                    <h3> Groups </h3>
+                        <p>
+                            Brands can convey into bigger corporations.
+                            Often brands members of the same group submit identical data. The user should be aware of this, looking at how the brands performed in terms of the index, to better interpret the visualizations. <br>
+                            In the following plot the connections show the composition of the groups that joined the survey.
+                        </p>
+                        <div id="alluvial"></div>
+                    <h3> Average score of the brands by category over the years </h3>
+                        <p>
+                            The Index is composed by five cathegories, each one caractheraized by different specific fields.
+                        </p>
+                        <ol>
+                            <li><strong>POLICY & COMMITMENTS</strong></li>
+                                <ol>
+                                    <li>
+                                        What are the company's human rights and environmental policies? <br>
+                                        Published document(s) which sets out the company's human rights standards and environmental standards (as related to its own company operations in its head offices, stores, warehouses, and owned production facilities).<br>
+                                        Please note: Some of the policies in this section can be found in an Employee Handbook, if publicly available, or sometimes in the Careers section of the website.<br>
+                                        Environmental policies are often separate company policies, not included in an Employee Handbook.<br>                                   
+                                        Supplier Code of Conducts do not count in section 1.1 unless they explicitly state that they apply to the company's own employees.
+                                    </li>
+                                    <li>
+                                        What are the company's vendor/supplier policies covering human rights and environmental standards across the supply chain? (e.g. Code of Conduct, Terms of Engagement, Supplier Guidebook)<br>
+                                        Published document(s) which sets out the minimum human rights and environmental standards expected by the company for suppliers and/or vendors.<br>
+                                        Please note: All of these issues must be explicitly stated in any policies.<br>
+                                        Code of Ethics that typically apply to section 1.1. do not count in 1.2 unless they explicitly state that they apply to suppliers.
+                                    </li>
+                                    <li>
+                                        Publishes the company's human rights and environmental management procedures <br>
+                                        (i.e. how the company is putting its policies 1.1 and 1.2 into action; simply auditing for compliance is not enough to score points) Reports published after January 2019
+                                    </li>
+                                    <li>
+                                        Publishes a strategic plan towards progressively improving human rights and environmental impacts <br>
+                                        (i.e. roadmap or vision document) Must cover dates in the future.
+                                    </li>
+
+                                    <li>
+                                        Publishes an annual sustainability or corporate social responsibility report that is audited or verified by an independent third party. <br>
+                                        Reports published after January 2019
+                                    </li>  
+                                </ol>
+                            <li><strong> GOVERNANCE </strong></li>
+                                <ol>
+                                    <li>Publicly discloses contact details for the department the company that has responsibility for human rights and environmental issues</li>
+                                    <li>Publicly discloses the company board member or board committee accountable for human rights and environmental issues</li>
+                                    <li>Publicly acknowledges how the company prioritises money spent on managing and implementing CSR and sustainability activities</li>
+                                    <li>Publishes how the company incorporates human rights and environmental performance into purchasing practices</li>
+                                </ol>
+                            <li><strong> TRACEABILITY </strong></li>
+                                <ol>
+                                    <li>Publishes tier one factories (direct relationship with buyer e.g. production units, Cut Make Trim (CMT) facilities, garment sewing, garment finishing, full package production and packaging and storage)</li>
+                                    <li>Publishes processing facilities (e.g. ginning and spinning, knitting, weaving, sub-contractors, dyeing and wet processing, tanneries, embroidering, printing, fabric finishing, dye-houses, laundries, etc.)</li>
+                                    <li>Publishes suppliers of raw materials such as fibres, hides, rubber, dyes, metals, etc. (e.g. raw material providers, farms, slaughter houses, sewing yarn suppliers, filament and staple, chemical suppliers, etc.)</li>
+                                </ol>
+                            <li><strong> KNOW, SHOW & FIX </strong></li>
+                                <ol>
+                                    <li>
+                                        Know, Show & Fix: Publicly discloses human rights and environmental due diligence processes, outcomes and what brand is doing to remediate any issues identified. (Please note: Auditing by itself does not represent a due diligence process.)<br>
+                                        Due diligence on human rights and environmental risks, impacts and violations. Please note for this entire section: Due diligence is the process through which companies identify, prevent, mitigate and remedy their actual and potential adverse impacts. Due diligence can be included within broader enterprise risk management systems, provided that it goes beyond simply identifying and managing material risks to the enterprise itself to include issues occurring within their supply chain and focuses on identifying the most salient risks to workers, farmers and other affected stakeholders themselves.<br>
+                                        A materiality matrix may be partially based on a companies due diligence process but they do not get points in this section purely for publishing a materiality matrix.
+                                    </li>
+                                    <li>
+                                        Know: Publicly discloses how the company assesses implementation of its supply chain policies (as described in section 1.2) by facility (e.g. at factories, processing facilities, and farms)
+                                    </li>
+                                    <li>
+                                        Show: Publicly discloses findings from its facility-level assessments (e.g. at factories, processing facilities, and farms)
+                                    </li>
+                                        <ul>
+                                            <li>Summary of assessment findings or aggregate facility rating without naming individual facilities</li>
+                                            <li>Facility-level rating by named facility</li>
+                                            <li>Selected audit findings/reports by named facility</li>
+                                        </ul>
+                                    <li>Fix: Publicly discloses description and status of the remediation process</li>
+                                    <li>Fix: Publicly discloses how the company ensures human rights and environmental grievances from employees and workers are captured and addressed (no points given if whistleblowing is only for reasons of financial misconduct) Reports published after January 2019</li>
+                                        <ul>
+                                            <li>For direct employees</li>
+                                            <li>For suppliers and vendors.  (No points given if onus is solely on the supplier to set up a grievance mechanism)</li>
+                                        </ul>
+                                </ol>
+                            <li><strong> SPOTLIGHT ISSUES </strong></li>
+                            <ol>
+                                <li>DECENT WORK & PURCHASING PRACTICES</li>
+                                    <ul>
+                                        <li>As related to SDG 8: Decent Work & Economic Growth - particularly targets 8.5 and 8.8</li>
+                                        <li>COVID-19 response</li>
+                                    </ul>
+                                <li>GENDER & RACIAL EQUALIT</li>
+                                    <ul>
+                                        <li>As related to SDG 10: Reducing Inequalities - particularly targets 10.2, 10.3 and 10.4</li>
+                                    </ul>
+                                <li>SUSTAINABLE SOURCING & MATERIALS</li>
+                                    <ul>
+                                        <li>As related to SDG 12: Responsible Consumption and Production - particularly targets 12.2 and 12.4</li>
+                                    </ul>
+                                <li>OVERCONSUMPTION, WASTE & CIRCULARITY</li>
+                                    <ul>
+                                        <li>As related to SDG 12: Responsible Consumption and Production - particularly targets 12.5, 12.6 and 12.8</li>
+                                    </ul>
+                                <li>WATER & CHEMICALS</li>
+                                    <ul>
+                                        <li>As related to SDG 6: Clean Water - particularly targets 6.3 and 6.4</li>
+                                    </ul>
+                                <li>CLIMATE CHANGE & BIODIVERSITY</li>
+                                    <ul>
+                                        <li>Decarbonisation, deforestation and regeneration</li>
+                                        <li>Carbon emissions</li>
+                                        <li>Energy use</li>
+                                    </ul>
+                            </ol>
+                        </ol>
+                        <p>
+                            Here you can compare the data collected over the current and the past editions.
+                            Selecting a year, the mean values of each category, and the total fashion index are represented.
+                        </p>
+                        <div>
+                            <label class="sort_label" for="year_scoreByCategory">Selected year:</label>
+                            <select name="year_scoreByCategory" id="year_scoreByCategory" onchange="scoreByCategory_update()">
+                                <option value="2021" selected> 2021 </option>
+                                <option value="2020"> 2020 </option>
+                                <option value="2019"> 2019 </option>
+                                <option value="2018"> 2018 </option>
+                                <option value="2017"> 2017 </option>
+                            </select> 
+                            <div id="scoreByCategory" class="dashboardCard"></div>
+                        </div>
+                <h2> Brand comparisons </h2>
+                    <h3> By indicator comparison </h3>
+                        <p>
+                            The Fashion Transparency Index takes into accounts many parameters, divided in five categories, as have been described above in detail.
+                        </p>
+                        <p>
+                            In the following plot a detalied view of the values per category, of each brand is represented.
+                            Brands are ordered by their final index score, from the highest to the lowest and the color shade encodes the values. <br>
+                            Hovering one brand name from the leader board list at the bottom mutes all the others, showing the brand behavoiur in each cathegory, sorted according to the total index value represented in the last axis.
+                        </p>
+                        <div id="parallelCoords"></div>
+                    <h3> By macro categories comparison </h3>
+                        <p>
+                            Each radar contains the percentage result per parameter for each category, referred to 2021.<br>
+                            The plot is interactive: you can pick maximum three brands you wish to compare from the selection curtains. Each brand is associated with the corresponding legend color. <br>
+                            The spider chart for each category of the index is filled with a coloured area shaped depending on the subsection scores. Hovering the area of a brand it is highlighted.
+                            Hovering the dots will reveal the precise values of each component.
+                            Lastly, hovering the section numbers of the axes, their complete names appears.
+                        </p>
+                        <div>
+                            <div class="selectGroup">
+                                <div class="selectAndLabel">
+                                    <label class="spiderColormark1" for="year_scoreByCategory"> ■ </label>
+                                    <select name="brand1_spider" id="brand1_spider" onchange="spider_update()">
+                                    </select> 
+                                </div>
+                                <div class="selectAndLabel">
+                                    <label class="spiderColormark2" for="year_scoreByCategory"> ■ </label>
+                                    <select name="brand2_spider" id="brand2_spider" onchange="spider_update()">
+                                    </select> 
+                                </div>
+                                <div class="selectAndLabel">
+                                    <label class="spiderColormark3" for="year_scoreByCategory"> ■ </label>
+                                    <select name="brand3_spider" id="brand3_spider" onchange="spider_update()">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="spiders">
+                                <div id="spider1" class="radarChart1"></div>
+                                <div id="spider2" class="radarChart2"></div>
+                                <div id="spider3" class="radarChart3"></div>
+                                <div id="spider4" class="radarChart4"></div>
+                                <div id="spider5" class="radarChart5"></div>
+                            </div>
+                        </div>
+                <h2> Per-brand scores </h2> 
+                    <p>
+                        Brands are easily identified by their logo.
+                        Selecting a brand: its logo, the fashion index, percentage composition and behaviour over the years will appear. <br>
+                        In particular, you can read how much a single index value discloses from the mean computed over all brands. 
+                        Hovering the doughnut, the single components of the index are highlithed and the percentage weight on the index computation appears. <br>
+                        The line plot shows the distribution of the discrete values of the index over the years, when data are available. 
+                        Hovering the points of the time line, values appear.
+                    </p>
+                    <label class="sort_label" for="dashboardSelector"> Brand: </label>
+                    <select name="dashboardSelector" id="dashboardSelector" onchange="dashboard_update()">
+                    </select> 
+                    <div class="dashboardCard">
+                        <div class="dashboardLogo">
+                            <div>
+                                <img id="logo" style="object-fit: fill"></img>
+                                <h1 id="group"></h1>
+                            </div>
+                        </div>
+                        <div class="dashboardPlot">
+                            <div id="doughnut"></div>
+                        </div>
+                        <div class="dashboardPlot">
+                            <div id="scoreByYear"></div>
+                        </div>
+                    </div>
+
+                <h2> Complete methodology and datasets </h2> 
+                    <h3> About the research process </h3>
+                        <h4>August - November 2020</h4>
+                            <p  class="pResearch">
+                                Methodology updates: Industry research and stakeholder consultation process informs how we select new Spotlight lssues, devise new indicators and tweak any others.
+                                The brand questionnaire is prepared.
+                                During this time, we also researched and selected the additional 11 brands and retailers to be reviewed, replacing the brands whose annual revenues fell below our threshold or went bankrupt in 2020/21.
+                            </p>
+                            <h4>December 2020 - January 2021</h4>
+                            <p class="pResearch">
+                            Research the selected brands and retailers: Dur research team reviews each brand and pre-populates their questionnaire with evidence of relevant public disclosure, awarding them preliminary points. At this time, brands are notified of their inclusion in this year's Index and invited to participate.
+                            </p>
+                            <h4> Early Fobruary 2021 </h4>
+                            <p  class="pResearch">
+                                Data quality assurance check: Each indicator is peer-reviewed by at least two different lead researchers for accuracy and consistency across all 250 brand questionnaires.
+                            </p>
+                            <h4> Late February 2021 </h4>
+                            <p  class="pResearch">
+                                Brands receive questionnaires to complete: 
+                                Brands are given approximately one month to fill in the gaps on their brand questionnaires, alerting us to information our researchers may not have found.
+                            </p>
+                            <h4> Late March 2021 </h4>
+                            <p  class="pResearch">
+                                Brands return completed questionnaires:
+                                Brands that choose to participate return their completed questionnaires. Our research team reviews responses and awards additional points where sufficient disclosure has been made.
+                            </p>
+                            <h4> Late March to late April 2021 </h4>
+                            <p  class="pResearch">
+                                Questionnaire responses reviewed and quality assurance check: The research team conducts several rounds of peer review data quality assurance checks before finalising each questionnaire and the scoring.
+                            </p>
+                            <h4> Early May to late June 2021 </h4>
+                            <p  class="pResearch">
+                                Data is compiled, analysis completed, and report prepared:
+                                Data from each brand questionnaire is collated into one large complete dataset, which is used to analyse final results, determine year-on-year progress and pull-out interesting findings. Brands are notified of their final scores and progress shortly before publication.
+                            </p>
+                    <h3> Datasets </h3>
+                    <a href="https://docs.google.com/spreadsheets/d/1aIkl4-gcC24Fc9K41p8BFLszgf-c2x-8/edit#gid=51335939">Here</a> you can find the full fashion transparency index dataset. <br>
+                    <a href="https://docs.google.com/spreadsheets/d/1Cdf3beg8xusZIRsJRHMIpVYf8xoHbgl_/edit?usp=drive_web&ouid=111337911816961735984&rtpof=true">Here</a> you can find the questionnaire. <br>
+                    <a href="https://www.statista.com/statistics/1207840/top-apparel-clothes-brands-worldwide/">Here</a> you can find the income dataset we used for the index vs income divergent barchart. <br>
+                    
+                    
+        </div>
+        <footer>
+            <div class="footerContainer">
+                <div class="footerImg">
+                    <img src="./logo.jpg" style="border-color: black">
+                </div>
+                <div class="footerText">
+                    <h1 class=footerh1> Data Visualization final project </h1>
+                    <p> <strong> Group 2:</strong> Andrea Gatti (4496922), Sara Fursone (4241492), Matteo Martini (3922943) </p>
+                    <p> <strong> A.Y.: </strong> 2021/2022 </p>
+                </div>
+            </div>
+            
+        </footer>
+        <!-- SCRIPTS -->
+        <script src="mainPlot.js"></script>
+        <script src="divergent.js"></script>
+        <script src="scoreByCategory.js"></script>
+        <script src="parallelCoords.js"></script>
+        <script src="spiders.js"></script>
+        <script src="dashboard.js"></script>
+        <script src="alluvial.js"></script>
+        <script src="scoreComposition.js"></script>
+        <script src="scoreLine.js"></script>
+    </body>
+</html>
